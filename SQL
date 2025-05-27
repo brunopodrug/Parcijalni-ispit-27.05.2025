@@ -1,0 +1,74 @@
+CREATE DATABASE JavaAdv
+
+CREATE TABLE Polaznik(
+PolaznikID int CONSTRAINT PK_Polaznik PRIMARY KEY IDENTITY,
+Ime nvarchar(50),
+Prezime nvarchar(50)
+)
+
+CREATE TABLE Upis(
+UpisID int CONSTRAINT PK_Upis PRIMARY KEY IDENTITY,
+IDProgramObrazovanja int,
+IDPolaznik int
+)
+
+CREATE TABLE ProgramObrazovanja (
+ProgramObrazovanjaID int CONSTRAINT PK_ProgramObrazovanja PRIMARY KEY IDENTITY,
+Naziv nvarchar(50),
+CSVET int
+)
+
+GO
+CREATE PROCEDURE DodajPolaznika
+    @ime NVARCHAR(50),
+    @prezime NVARCHAR(50)
+AS
+BEGIN
+	INSERT INTO Polaznik([Ime]
+      ,[Prezime]) VALUES (@ime, @prezime)
+END;
+GO
+
+GO
+CREATE PROCEDURE DodajProgramObrazovanja
+	@name NVARCHAR(50),
+	@bodovi int
+AS
+BEGIN
+	INSERT INTO ProgramObrazovanja([Naziv]
+      ,[CSVET]) VALUES (@name, @bodovi)
+END;
+
+GO
+CREATE PROCEDURE DodajPolaznikuProgramObrazovanja
+	@polaznikID int,
+	@programID int
+AS
+BEGIN
+	INSERT INTO Upis([IDProgramObrazovanja]
+      ,[IDPolaznik]) VALUES (@programID, @polaznikID)
+END;
+
+GO
+CREATE PROCEDURE PromjeniProgramObrazovanja
+	@polaznikID int,
+	@programID int
+AS
+BEGIN
+	UPDATE Upis
+	SET
+		IDProgramObrazovanja = @programID
+	WHERE
+		IDPolaznik = @polaznikID
+END;
+
+GO
+CREATE PROCEDURE IspisSvihPolaznikaPrograma
+	@programID int
+AS
+BEGIN
+	SELECT p.Ime, p.Prezime FROM Upis AS u
+	INNER JOIN Polaznik as p
+	ON u.IDPolaznik = p.PolaznikID
+	WHERE u.IDProgramObrazovanja = @programID
+END;
